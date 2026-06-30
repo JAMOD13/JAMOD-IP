@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+</head>
+<body>
+    <script>
+        function getAdvancedDetails() {
+            let details = {
+                screenWidth: window.screen.width,
+                screenHeight: window.screen.height,
+                colorDepth: window.screen.colorDepth,
+                devicePixelRatio: window.devicePixelRatio,
+                logicalCores: navigator.hardwareConcurrency || 'N/A',
+                language: navigator.language || navigator.userLanguage,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+
+            // Canvas fingeprinting / GPU detection for hardware clues
+            try {
+                let canvas = document.createElement('canvas');
+                let gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    let debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    details.gpuVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+                    details.gpuRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_INFO);
+                }
+            } catch (e) {
+                details.gpuError = "Not supported";
+            }
+
+            return details;
+        }
+
+        // Send data to server then redirect
+        let hardwareData = getAdvancedDetails();
+        
+        fetch('/log-data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(hardwareData)
+        }).finally(() => {
+            // Data send hone ke baad Google par redirect karein
+            window.location.href = "https://www.google.com";
+        });
+    </script>
+</body>
+</html>
